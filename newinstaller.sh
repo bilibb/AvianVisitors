@@ -55,6 +55,8 @@ CONF_TEMPLATE="$HOME/BirdNET-Pi/scripts/install_config.sh"
 sed -i "s/^DATABASE_LANG=en\$/DATABASE_LANG=$DATABASE_LANG/" "$CONF_TEMPLATE"
 sed -i "s/^LATITUDE=\$LATITUDE\$/LATITUDE=$LATITUDE/" "$CONF_TEMPLATE"
 sed -i "s/^LONGITUDE=\$LONGITUDE\$/LONGITUDE=$LONGITUDE/" "$CONF_TEMPLATE"
+sed -i "s/^CADDY_PWD=\$CADDY_PWD\$/CADDY_PWD=birdnet/" "$CONF_TEMPLATE"
+sed -i "s/^REG_CARD=\$REG_CARD\$/REG_CARD=plughw:1,0/" "$CONF_TEMPLATE"
 
 # Patch homepage to German if DATABASE_LANG=de
 if [ "$DATABASE_LANG" = "de" ]; then
