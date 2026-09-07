@@ -42,7 +42,7 @@ install_scripts() {
 }
 
 install_avian_controls() {
-  local source target
+  local source target admin_init_output caddy_gid educator_lock
   while read -r source target; do
     [ -f "${my_dir}/scripts/${source}" ] || continue
     install -o root -g root -m 0755 \
@@ -56,10 +56,46 @@ reinstall_services.sh avian-service-refresh
 security_refresh.sh avian-security-refresh
 link_webroot.sh avian-link-webroot
 update_caddyfile.sh avian-caddy-refresh
+educators_control.sh avian-educators
 EOF
 
+  auth_state_dir=/var/lib/avian-visitors
+  auth_lock=$auth_state_dir/admin-auth.lock
+  if [ -e "$auth_state_dir" ] || [ -L "$auth_state_dir" ]; then
+    [ -d "$auth_state_dir" ] && [ ! -L "$auth_state_dir" ] \
+      && [ "$(stat -c '%u:%g:%a' -- "$auth_state_dir")" = '0:0:755' ] \
+      || { echo "Unsafe admin state directory" >&2; return 1; }
+  else
+    install -d -o root -g root -m 0755 "$auth_state_dir"
+  fi
+  if [ -e "$auth_lock" ] || [ -L "$auth_lock" ]; then
+    [ -f "$auth_lock" ] && [ ! -L "$auth_lock" ] \
+      && [ "$(stat -c '%u:%g:%a:%h' -- "$auth_lock")" = '0:0:600:1' ] \
+      || { echo "Unsafe admin state lock" >&2; return 1; }
+  else
+    install -o root -g root -m 0600 /dev/null "$auth_lock"
+  fi
+  caddy_gid=$(getent group caddy | awk -F: 'NR == 1 { print $3 }')
+  [ -n "$caddy_gid" ] \
+    || { echo "Caddy group was not found" >&2; return 1; }
+  educator_lock=$auth_state_dir/educators.lock
+  if [ ! -e "$educator_lock" ] && [ ! -L "$educator_lock" ]; then
+    install -o root -g caddy -m 0660 /dev/null "$educator_lock"
+  fi
+  [ -f "$educator_lock" ] && [ ! -L "$educator_lock" ] \
+    && [ "$(stat -c '%u:%g:%a:%h' -- "$educator_lock")" = \
+      "0:$caddy_gid:660:1" ] \
+    || { echo "Unsafe Educators coordination lock" >&2; return 1; }
+  # Initialize the verifier and atomically provision the derived rate state
+  # before the first managed Caddy render. Runtime readers fail closed while
+  # either state is absent, so a clean install must not defer this step.
+  if ! admin_init_output=$(/usr/local/sbin/avian-admin-control auth-state-init); then
+    printf '%s\n' "$admin_init_output" >&2
+    return 1
+  fi
+
   # Refresh an archive the owner has already opted into. First-time setup
-  # remains a deliberate Tools action.
+  # remains a deliberate Settings action.
   if [ -x /usr/local/sbin/avian-archive-control ] \
     && [ -x "${HOME}/bird-archive/archive_to_drive.sh" ]; then
     /usr/local/sbin/avian-archive-control install >/dev/null
@@ -338,6 +374,7 @@ Restart=always
 Type=simple
 RestartSec=3
 User=${USER}
+ExecCondition=/usr/local/bin/livestream.sh --check
 ExecStart=/usr/local/bin/livestream.sh
 [Install]
 WantedBy=multi-user.target
@@ -404,12 +441,18 @@ install_services() {
   USER=$USER HOME=$HOME ${my_dir}/scripts/createdb.sh
 }
 
-if [ -f ${config_file} ];then
-  source ${config_file}
+if [ -f "${config_file}" ];then
+  # shellcheck source=/dev/null
+  source "${config_file}"
   source "${my_dir}/scripts/install_helpers.sh"
   install_services
   chown_things
   /usr/local/sbin/avian-security-refresh
+  case "${AVIAN_INSTALL_EDUCATORS:-0}" in
+    0) ;;
+    1) /usr/local/sbin/avian-educators enable ;;
+    *) echo "Invalid Educators install selection" >&2; exit 1 ;;
+  esac
 else
   echo "Unable to find a configuration file. Please make sure that $config_file exists."
 fi
