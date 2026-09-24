@@ -13,21 +13,20 @@ in generierten Dateien (Bilder, `dims.json`, `masks.json`, Cache-Versionen in `a
 ## Neue Upstream-Version übernehmen
 
 ```sh
-git fetch upstream --tags
 git switch german-dashboard-sets
-git merge v1.3.0                      # neuer Tag
-# Konflikte in dims.json / masks.json / apt.js-Versionen: Upstream-Seite nehmen,
-# danach regeneriert das Skript sie für das eigene Bildset:
-git checkout --theirs avian/frontend/dims.json avian/frontend/masks.json avian/frontend/apt.js
-python3 avian/scripts/use_illustration_set.py
-python3 tests/test_patch_homepage_de.py        # veraltete Übersetzungs-Keys finden
-python3 tests/test_use_illustration_set.py
-git add -A && git commit
+avian/scripts/merge_upstream.sh             # aktueller Stand von upstream/avian-visitors
+avian/scripts/merge_upstream.sh v1.3.0      # oder ein Release-Tag
 git push origin german-dashboard-sets
 ```
 
-`git config rerere.enabled true` ist gesetzt: einmal gelöste Konflikte löst Git beim
-nächsten Mal selbst.
+Das Skript holt `upstream`, merged und nimmt bei generierten Dateien (`dims.json`,
+`masks.json`, Cache-Versionen in `apt.js`, `illustrations/*.png`) die Upstream-Seite.
+Danach wendet `use_illustration_set.py` das eigene Bildset wieder an. Bleiben echte
+Konflikte (z. B. in `newinstaller.sh`), bricht es mit einer Liste ab: lösen,
+`git add`, Skript erneut starten. Veraltete deutsche Übersetzungen meldet
+`test_patch_homepage_de.py` als Warnung.
+
+`git config rerere.enabled true` merkt sich von Hand gelöste Konflikte für das nächste Mal.
 
 ## Illustrationen
 
