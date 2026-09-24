@@ -54,7 +54,7 @@ if [[ ! -z $PACKAGES_MISSING ]] ; then
   sudo apt -y install $PACKAGES_MISSING
 fi
 
-branch=german-dashboard
+branch=german-dashboard-sets
 
 DATABASE_LANG=de
 LATITUDE=52.2799
