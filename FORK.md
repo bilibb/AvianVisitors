@@ -27,13 +27,11 @@ git push origin german-dashboard-sets
 ```
 
 `git config rerere.enabled true` ist gesetzt: einmal gelöste Konflikte löst Git beim
-nächsten Mal selbst. Mit jj: `jj git fetch --remote upstream`, dann
-`jj new german-dashboard-sets v1.3.0 -m "Merge v1.3.0"`, Konflikte in den Dateien
-lösen, Skript laufen lassen, `jj bookmark move german-dashboard-sets --to @`.
+nächsten Mal selbst.
 
 ## Illustrationen
 
-Rohbilder je Modell liegen lokal (nicht in Git, ~0,5–1 GB pro Set) unter
+Rohbilder je Modell liegen als normale Git-Dateien (~0,5–1 GB pro Set) unter
 `avian/assets/illustrations/<set>/<slug>.png` bzw. `<slug>-2.png` (Flug).
 Aktiv ist, was in `avian/assets/illustrations/*.png` committed ist.
 
@@ -44,6 +42,9 @@ ILLUSTRATION_SET=flux.2-dev python3 avian/scripts/use_illustration_set.py
 ```
 
 Neues Set: Ordner mit gleichen Dateinamen daneben legen, Skript mit dem Ordnernamen
-aufrufen, Ergebnis committen. Bilder mit Alpha-Kanal werden nur zugeschnitten,
+aufrufen, Ordner und Ergebnis committen. Jedes ersetzte Rohbild bleibt dauerhaft in
+der History, also nur fertige Sets committen. Bilder mit Alpha-Kanal werden nur zugeschnitten,
 Bilder auf flachem Hintergrund per rembg freigestellt (langsam, Ergebnis wird in
-`<set>/.cut/` gecacht). Rohbilder separat sichern.
+`<set>/.cut/` gecacht).
+Der Pi-Installer klont partiell und sparse (`--filter=blob:none`, ohne `illustrations/<set>/`),
+lädt die Rohbilder also nicht.

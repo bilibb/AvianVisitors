@@ -5,7 +5,7 @@ A set is a folder of raw model renders, one per image model:
 
     avian/assets/illustrations/<set>/<slug>.png     (+ <slug>-2.png flight)
 
-The folders are git-ignored. This cuts every render (cached in <set>/.cut/),
+The folders are committed as plain git. This cuts every render (cached in <set>/.cut/),
 copies the cutouts over avian/assets/illustrations/<slug>.png, rebuilds
 dims.json + masks.json and cache-busts apt.js. Commit the result.
 

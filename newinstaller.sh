@@ -60,7 +60,11 @@ DATABASE_LANG=de
 LATITUDE=52.2799
 LONGITUDE=8.0471
 
-git clone -b $branch --depth=1 https://github.com/bilibb/AvianVisitors.git ${HOME}/BirdNET-Pi &&
+# The Pi only needs the committed cutouts: a partial, sparse clone never
+# downloads the ~1.5 GB of raw illustration sets under illustrations/<set>/.
+git clone -b $branch --depth=1 --filter=blob:none --no-checkout https://github.com/bilibb/AvianVisitors.git ${HOME}/BirdNET-Pi &&
+git -C ${HOME}/BirdNET-Pi sparse-checkout set --no-cone '/*' '!/avian/assets/illustrations/*/' &&
+git -C ${HOME}/BirdNET-Pi checkout &&
 
 CONF_TEMPLATE="$HOME/BirdNET-Pi/scripts/install_config.sh"
 sed -i "s/^DATABASE_LANG=en\$/DATABASE_LANG=$DATABASE_LANG/" "$CONF_TEMPLATE"

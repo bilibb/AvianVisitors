@@ -76,7 +76,6 @@ avian/assets/_legacy/
 # to whatever hardware happened to produce them.
 tflite_runtime-*.whl
 requirements_custom.txt
-# Local illustration set sources (raw model renders, ~1 GB each) and their
-# cutout caches. avian/scripts/use_illustration_set.py copies the chosen set
-# into avian/assets/illustrations/, which is what gets committed.
-avian/assets/illustrations/*/
+# Cutout cache of avian/scripts/use_illustration_set.py; the raw set
+# sources next to it are committed.
+avian/assets/illustrations/*/.cut/
