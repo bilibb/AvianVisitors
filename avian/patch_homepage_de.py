@@ -31,7 +31,7 @@ HTML_TRANSLATIONS = {
     "back to collage": "zurück zur Collage",
     # Menu button
     ">menu<": ">Menü<",
-    'aria-label="unlock"': 'aria-label="entsperren"',
+    'aria-label="Unlock admin controls"': 'aria-label="Admin-Steuerung entsperren"',
     'aria-label="close"': 'aria-label="schließen"',
     # Main header
     "Heard Recently": "Kürzlich gehört",
@@ -109,8 +109,11 @@ HTML_TRANSLATIONS = {
     "A tiny microphone identifies every passing bird with Cornell's": "Ein kleines Mikrofon erkennt jeden vorbeifliegenden Vogel mit Cornells",
     "Each species shows up as an illustration in the collage, sized by how often it's been heard.": "Jede Art erscheint als Illustration in der Collage, skaliert nach Häufigkeit der Erkennung.",
     # Lock screen
-    "enter password to unlock tools.": "Passwort eingeben zum Entsperren.",
-    'placeholder="password"': 'placeholder="Passwort"',
+    ">Admin password<": ">Admin-Passwort<",
+    'placeholder="admin password"': 'placeholder="Admin-Passwort"',
+    "Plain HTTP does not protect this password from other devices on the network.":
+        "Unverschlüsseltes HTTP schützt dieses Passwort nicht vor anderen Geräten im Netzwerk.",
+    ">lock admin controls<": ">Admin-Steuerung sperren<",
     # Time window picker buttons
     ">7D<": ">7T<",
     ">ALL<": ">ALLE<",
@@ -174,7 +177,9 @@ JS_TRANSLATIONS = {
     # windowLabel() / statsWindowLabel() return values
     "'this hour'": "'diese Stunde'",
     "'past 12h'": "'letzte 12 Std.'",
-    "'this week'": "'diese Woche'",
+    "'since midnight'": "'seit Mitternacht'",
+    "'past 24h'": "'letzte 24 Std.'",
+    "'past 7d'": "'letzte 7 Tage'",
     "'selected hour'": "'gewählte Stunde'",
     "'final 12h'": "'letzte 12 Std. des Tages'",
     "'selected day'": "'gewählter Tag'",
