@@ -54,8 +54,26 @@ if [[ ! -z $PACKAGES_MISSING ]] ; then
   sudo apt -y install $PACKAGES_MISSING
 fi
 
-branch=avian-visitors
-git clone -b $branch --depth=1 https://github.com/Twarner491/AvianVisitors.git ${HOME}/BirdNET-Pi &&
+branch=german-dashboard-v2
+
+DATABASE_LANG=de
+LATITUDE=52.2799
+LONGITUDE=8.0471
+
+git clone -b $branch --depth=1 https://github.com/bilibb/AvianVisitors.git ${HOME}/BirdNET-Pi &&
+
+CONF_TEMPLATE="$HOME/BirdNET-Pi/scripts/install_config.sh"
+sed -i "s/^DATABASE_LANG=en\$/DATABASE_LANG=$DATABASE_LANG/" "$CONF_TEMPLATE"
+sed -i "s/^LATITUDE=\$LATITUDE\$/LATITUDE=$LATITUDE/" "$CONF_TEMPLATE"
+sed -i "s/^LONGITUDE=\$LONGITUDE\$/LONGITUDE=$LONGITUDE/" "$CONF_TEMPLATE"
+sed -i "s/^CADDY_PWD=\$CADDY_PWD\$/CADDY_PWD=birdnet/" "$CONF_TEMPLATE"
+sed -i "s/^REG_CARD=\$REG_CARD\$/REG_CARD=plughw:1,0/" "$CONF_TEMPLATE"
+
+# Patch homepage to German if DATABASE_LANG=de
+if [ "$DATABASE_LANG" = "de" ]; then
+  python3 "$HOME/BirdNET-Pi/avian/patch_homepage_de.py" \
+          "$HOME/BirdNET-Pi/avian/frontend"
+fi
 
 "$HOME/BirdNET-Pi/scripts/install_birdnet.sh" "${installer_args[@]}"
 if [ ${PIPESTATUS[0]} -eq 0 ];then
