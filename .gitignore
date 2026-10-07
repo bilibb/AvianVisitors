@@ -76,3 +76,5 @@ avian/assets/_legacy/
 # to whatever hardware happened to produce them.
 tflite_runtime-*.whl
 requirements_custom.txt
+# zvec-grep workspace index (local search index, rebuilt with `zg index`)
+.zvec-grep/
